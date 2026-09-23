@@ -2,23 +2,6 @@
  'use strict';
  const {Cart,clean,KEY}=window.JewelryCartModel;
  const get=s=>document.querySelector(s),all=s=>[...document.querySelectorAll(s)];
- function ensureSaoBentoCategory(){
-  const categories=get('.categories');if(!categories)return;
-  categories.classList.add('saints-real-card');
-  let article=categories.querySelector('.category-sao-bento');
-  if(!article){
-   article=document.createElement('article');article.className='category category-sao-bento';
-   article.innerHTML='<a href="#galeria" class="round-photo" data-category-link="sao-bento"><img src="images/sao-bento.webp" alt="Ilustração de São Bento" width="290" height="290" loading="lazy"></a><h2>São Bento</h2><p>Oração e devoção</p><a class="text-link" href="#galeria" data-category-link="sao-bento">Conhecer dobrão <span aria-hidden="true">›</span></a>';
-   categories.append(article);
-  }
-  if(!get('#real-saint-card-fix')){
-   const style=document.createElement('style');style.id='real-saint-card-fix';
-   style.textContent='.categories.saints-real-card::before,.categories.saints-real-card::after{content:none!important;display:none!important}@media(min-width:801px){.categories.saints-real-card{grid-template-columns:repeat(5,minmax(0,1fr));gap:20px}}@media(max-width:800px) and (min-width:621px){.categories.saints-real-card{grid-template-columns:repeat(3,minmax(0,1fr))}.categories.saints-real-card .category-sao-bento{grid-column:2}}@media(max-width:620px){.categories.saints-real-card{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 16px}.categories.saints-real-card .category-sao-bento{grid-column:1/-1;width:min(235px,100%);justify-self:center;margin:0 auto}.categories.saints-real-card .category-sao-bento .round-photo{margin-bottom:16px}.categories.saints-real-card .category-sao-bento h2{font-size:18px;line-height:1.35;margin-bottom:13px}.categories.saints-real-card .category-sao-bento p{font-size:14px;line-height:1.85}.categories.saints-real-card .category-sao-bento .text-link{font-size:13px;min-height:44px;margin-top:6px}}';
-   document.head.append(style);
-  }
-  article.querySelectorAll('[data-category-link="sao-bento"]').forEach(link=>link.addEventListener('click',()=>get('[data-filter="sao-bento"]')?.click()));
- }
- ensureSaoBentoCategory();
  const cards=new Map(all('.piece[data-product-id]').map(card=>[card.dataset.productId,card]));
  let storage;try{storage=localStorage;}catch{storage={getItem(){return null;},setItem(){throw Error('unavailable');}};}
  const cart=new Cart(storage),drawer=get('#cart-drawer');
