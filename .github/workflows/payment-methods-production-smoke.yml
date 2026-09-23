@@ -1,0 +1,50 @@
+name: payment-methods-production-smoke
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate production payment methods UI
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='https://dobroes-religiosos.vercel.app'
+          curl -sS "$BASE/api/products" -o products.json
+          python3 - <<'PY'
+          import json
+          data=json.load(open('products.json'))
+          assert data.get('cardFormConfigured') is True, data
+          assert data.get('pixConfigured') is True, data
+          methods=data.get('paymentMethods',[])
+          assert 'card' in methods and 'pix' in methods, data
+          print('API PASS:', methods)
+          PY
+          python3 -m pip install --quiet selenium
+          python3 - <<'PY'
+          import json,time
+          from selenium import webdriver
+          from selenium.webdriver.chrome.options import Options
+          BASE='https://dobroes-religiosos.vercel.app'
+          opts=Options();opts.add_argument('--headless=new');opts.add_argument('--no-sandbox');opts.add_argument('--disable-dev-shm-usage');opts.add_argument('--window-size=1440,1200')
+          driver=webdriver.Chrome(options=opts)
+          try:
+              driver.get(BASE);time.sleep(6)
+              state=driver.execute_script('''return {
+                href:location.href,
+                customerName:!!document.querySelector('#customer-name'),
+                cardText:document.querySelector('#cart-checkout')?.textContent?.trim()||'',
+                pixText:document.querySelector('.pix-option-button')?.textContent?.trim()||'',
+                pixExists:!!document.querySelector('.pix-option-button')
+              };''')
+              print('UI STATE='+json.dumps(state,ensure_ascii=False))
+              assert state['customerName'] is True, state
+              assert 'crédito ou débito' in state['cardText'].lower(), state
+              assert state['pixExists'] is True and 'pix' in state['pixText'].lower(), state
+              print('UI PASS')
+          finally:
+              driver.quit()
+          PY
