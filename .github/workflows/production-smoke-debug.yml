@@ -1,0 +1,101 @@
+name: production-smoke-debug
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate production checkout boot and click
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='https://dobroes-religiosos.vercel.app'
+          echo '--- production config ---'
+          curl -sS "$BASE/api/products"
+          echo
+          echo '--- browser checkout ---'
+          python3 -m pip install --quiet selenium
+          python3 - <<'PY'
+          import json, time
+          from selenium import webdriver
+          from selenium.webdriver.common.by import By
+          from selenium.webdriver.support.ui import WebDriverWait
+          from selenium.webdriver.support import expected_conditions as EC
+          from selenium.webdriver.chrome.options import Options
+
+          BASE='https://dobroes-religiosos.vercel.app'
+          opts=Options()
+          opts.add_argument('--headless=new')
+          opts.add_argument('--no-sandbox')
+          opts.add_argument('--disable-dev-shm-usage')
+          opts.add_argument('--window-size=1440,1400')
+          opts.set_capability('goog:loggingPrefs', {'browser':'ALL'})
+          driver=webdriver.Chrome(options=opts)
+          wait=WebDriverWait(driver,20)
+          def jclick(el): driver.execute_script('arguments[0].click()',el)
+          try:
+              driver.get(BASE)
+              wait.until(EC.presence_of_element_located((By.ID,'cart-checkout')))
+              wait.until(lambda d: d.execute_script("return document.readyState")=='complete')
+              time.sleep(3)
+              state=driver.execute_script(r'''
+                return {
+                  href:location.href,
+                  customerName:!!document.querySelector('#customer-name'),
+                  scripts:[...document.scripts].map(s=>s.src||'[inline]')
+                };
+              ''')
+              print('BOOT='+json.dumps(state,ensure_ascii=False))
+              if not state['customerName']:
+                  print('BROWSER_LOGS='+json.dumps(driver.get_log('browser'),ensure_ascii=False))
+                  raise SystemExit('FAIL: CardForm client did not boot')
+
+              driver.execute_script(r'''
+                window.__checkoutCalls=[];
+                const originalFetch=window.fetch.bind(window);
+                window.fetch=async function(input,options={}){
+                  const url=typeof input==='string'?input:input.url;
+                  const method=(options&&options.method)||'GET';
+                  window.__checkoutCalls.push({url,method});
+                  const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json'}});
+                  if(url.includes('viacep.com.br/')) return json({logradouro:'Praça da Sé',bairro:'Sé',localidade:'São Paulo',uf:'SP'});
+                  if(url==='/api/shipping/quote') return json({options:[{quoteId:'22222222-2222-4222-8222-222222222222',name:'Frete teste',serviceCode:'SF-1',priceCents:1000,days:3,cep:'01001000',expiresAt:Date.now()+600000}]});
+                  if(url==='/api/card/prepare') return json({orderId:'33333333-3333-4333-8333-333333333333',orderCode:'DEBUG',items:[{productId:'produto_01',name:'Dobrão de São Jorge',quantity:1,subtotal:15000}],productsTotal:15000,shipping:{name:'Frete teste',serviceCode:'SF-1',priceCents:1000,days:3,cep:'01001000'},address:{cep:'01001000',street:'Praça da Sé',number:'1',complement:'',district:'Sé',city:'São Paulo',state:'SP'},customer:{customerId:'debug',name:'Teste Checkout',email:'teste@example.com',phone:'11999999999'},total:16000,currency:'BRL',status:'pending',fulfillmentStatus:'awaiting_payment',createdAt:new Date().toISOString(),paymentProvider:'mercadopago',paymentId:null,providerStatusDetail:'',amount:'160.00',quoteExpiresAt:Date.now()+600000});
+                  if(url==='/api/checkout') return json({error:'not_found',message:'Recurso não encontrado.'},404);
+                  return originalFetch(input,options);
+                };
+              ''')
+
+              jclick(driver.find_element(By.CSS_SELECTOR,'[data-add-product="produto_01"]'))
+              jclick(driver.find_element(By.ID,'cart-toggle'))
+              fields={
+                'delivery-cep':'01001-000','delivery-street':'Praça da Sé','delivery-number':'1',
+                'delivery-complement':'','delivery-district':'Sé','delivery-city':'São Paulo',
+                'customer-name':'Teste Checkout','customer-phone':'11999999999','customer-email':'teste@example.com'
+              }
+              for fid,val in fields.items():
+                  el=driver.find_element(By.ID,fid); el.clear(); el.send_keys(val)
+              driver.execute_script("document.getElementById('delivery-state').value='SP'; document.getElementById('delivery-state').dispatchEvent(new Event('change',{bubbles:true}));")
+              jclick(driver.find_element(By.ID,'shipping-calculate'))
+              radio=wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'input[name="shipping-choice"]')))
+              jclick(radio)
+              button=wait.until(EC.presence_of_element_located((By.ID,'cart-checkout')))
+              if button.get_attribute('disabled') is not None:
+                  raise SystemExit('FAIL: checkout button stayed disabled')
+              jclick(button)
+              time.sleep(2)
+              calls=driver.execute_script('return window.__checkoutCalls')
+              print('CALLS='+json.dumps(calls,ensure_ascii=False))
+              urls=[c['url'] for c in calls]
+              if '/api/checkout' in urls:
+                  raise SystemExit('FAIL: legacy /api/checkout still fired')
+              if '/api/card/prepare' not in urls:
+                  msg=driver.find_element(By.ID,'cart-message').text
+                  raise SystemExit('FAIL: /api/card/prepare not called; message='+msg)
+              print('PASS: production click uses /api/card/prepare and never /api/checkout')
+          finally:
+              driver.quit()
+          PY
