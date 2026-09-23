@@ -1,0 +1,54 @@
+{
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 15
+    },
+    "api/tracking.js": {
+      "maxDuration": 15
+    },
+    "api/cart-bundle.js": {
+      "maxDuration": 15
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/tracking-link",
+      "dest": "/api/tracking?action=link"
+    },
+    {
+      "src": "/api/track",
+      "dest": "/api/tracking?action=track"
+    },
+    {
+      "src": "/api/(?<path>.*)",
+      "dest": "/api?path=$path"
+    },
+    {
+      "src": "/frontend/js/cart\\.js",
+      "dest": "/api?path=js/cart.js"
+    },
+    {
+      "src": "/js/cart\\.js",
+      "dest": "/api?path=js/cart.js"
+    },
+    {
+      "src": "/admin/?",
+      "dest": "/api?path=admin"
+    },
+    {
+      "src": "/sucesso(?:\\.html)?",
+      "dest": "/api?path=sucesso"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/",
+      "dest": "/frontend/index.html"
+    },
+    {
+      "src": "/(?<path>.*)",
+      "dest": "/frontend/$path"
+    }
+  ]
+}
