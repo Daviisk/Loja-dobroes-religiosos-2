@@ -1,0 +1,77 @@
+ENTREGA E CONFIGURAÇÃO — DOBRÕES RELIGIOSOS
+
+O QUE ESTÁ IMPLEMENTADO
+Cinco santos a R$150; imagens ilustrativas; carrinho; endereço obrigatório;
+consulta PAC/SEDEX por CEP; preço e prazo dos Correios; seleção da entrega;
+pedido com produtos + frete; integração de pagamento preparada.
+Sem credenciais, a cotação mostra indisponibilidade. Nunca há frete fictício,
+frete grátis automático ou cobrança sem uma cotação válida.
+
+PARA ATIVAR O FRETE
+1. Informe seu CEP de origem em SHIPPING_ORIGIN_CEP.
+2. Configure CORREIOS_USER, CORREIOS_API_PASSWORD (senha de API, não senha pública),
+   CORREIOS_POSTING_CARD e os códigos PAC/SEDEX liberados no seu contrato.
+   Use somente variáveis de ambiente no servidor. Não envie segredos por chat.
+3. Pese o dobrão embalado individualmente e a embalagem externa vazia.
+   Preencha SHIPPING_UNIT_WEIGHT_G e SHIPPING_PACKAGE_WEIGHT_G em gramas.
+4. Meça comprimento, largura, altura livre/base da embalagem e altura adicional
+   de cada unidade em centímetros. O modelo atual empilha unidades em uma caixa:
+   peso = embalagem vazia + quantidade × peso unitário;
+   altura = altura base + quantidade × altura unitária.
+   Configure SHIPPING_LENGTH_CM, SHIPPING_WIDTH_CM, SHIPPING_BASE_HEIGHT_CM,
+   SHIPPING_UNIT_HEIGHT_CM. Valide fisicamente combinações de 1 a 50 unidades.
+   Se sua embalagem não segue esse modelo, adapte createCorreios antes de vender.
+5. Use CORREIOS_MODE=homologation com credenciais de teste. Valide CEPs atendidos,
+   serviço indisponível, pacote limite, preço e prazo, comparando com o portal.
+6. Somente depois configure CORREIOS_MODE=production com seus dados de produção.
+   Pagamentos reais são bloqueados se o frete estiver em homologação.
+
+A integração direta da API dos Correios exige contrato e serviços habilitados.
+Se não tiver contrato, escolha um intermediador compatível para substituir
+somente o adaptador de cotação, mantendo a validação e o pedido existentes.
+
+SEGURANÇA E DADOS
+POST /api/shipping/quote recebe somente items (ID/quantidade) e cep.
+O servidor usa origem, peso e medidas privados. Cotação persistida em SQLite,
+vinculada à sessão, carrinho e CEP, com validade de 10 minutos.
+POST /api/checkout recebe items, address e quoteId. Preço/frete/total enviados
+pelo navegador são rejeitados. Frete é incluído como linha no pagamento e o
+webhook confere o total integral. Repetir a mesma compra reutiliza o pedido.
+Alterar endereço, serviço ou valor impede reutilizar indevidamente a tentativa.
+Nome e endereço não são guardados em localStorage nem em logs. Ficam no SQLite
+do servidor para entrega e acessíveis somente na sessão dona do pedido.
+Validação de endereço verifica formato/campos, não confirma existência da rua
+ou correspondência geográfica cidade/CEP. Cliente deve revisar o endereço.
+Não há preenchimento automático de rua pelo CEP nesta versão.
+Prazo exibido é estimativa após a postagem, não inclui separação do pedido.
+Etiquetas, rastreamento, seguro adicional e expedição devem ser configurados
+conforme sua operação. A cotação atual utiliza o serviço sem adicionais.
+
+TESTES
+65 testes automatizados passaram (npm test). Integrações externas foram
+simuladas; a homologação real depende das credenciais e dos dados de postagem.
+
+IMAGENS
+Criadas pela ferramenta integrada de geração de imagens, modo product-mockup.
+Arquivos: frontend/images/sao-jorge.png, santo-antonio.png, sao-francisco.png,
+sao-jose.png, sao-bento.png. Incluídas neste ZIP e incorporadas na prévia HTML.
+Prompt-base: One single round gold-toned devotional coin with sculpted bas-relief
+of [subject]. Thick milled rim, fine antiqued metal relief, no suspension loop,
+no necklace. Straight-on centered product photograph, entire coin visible
+occupying 75% of square frame on dark charcoal velvet, soft warm studio lighting,
+dignified Catholic iconography, intricate realistic engraving. No text,
+no lettering, no watermark, no additional objects. Concept illustration,
+not a representation of a certified precious metal.
+Subjects: Saint George on horseback with spear and a small dragon below,
+non-graphic; Saint Anthony of Padua in Franciscan habit holding infant Jesus
+and a lily; Saint Francis of Assisi wearing a humble hooded habit with a small
+bird perched on his hand; Saint Joseph holding infant Jesus and a flowering
+lily staff; Saint Benedict wearing monastic habit holding a book and a cross.
+
+DOCUMENTAÇÃO CONSULTADA
+https://www.correios.com.br/atendimento/developers/arquivos/manual-para-integracao-correios-api
+Manual de integração, revisão 04/2025 V2.4; consultado em 17/09/2026.
+Token: POST /token/v1/autentica/cartaopostagem
+Preço: GET /preco/v1/nacional/{codigoServico}
+Prazo: GET /prazo/v1/nacional/{codigoServico}
+Confira permissões e respostas da conta no CWS durante a homologação.

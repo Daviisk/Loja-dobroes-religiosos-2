@@ -1,0 +1,60 @@
+RELATÓRIO DE VALIDAÇÃO — 17/09/2026
+
+Comando: npm test
+Resultado: 65 testes passaram; 0 falhas; 0 ignorados.
+Ambiente: Node.js 24.19.0; SQLite via node:sqlite.
+Ferramentas: node:test, Supertest e jsdom.
+
+API / BANCO / PAGAMENTO: 37 testes
+- Preços e totais recalculados pelo servidor em centavos.
+- Itens vazios/ausentes, IDs inexistentes/repetidos, quantidades zero/negativas,
+  fracionárias, string e muito altas.
+- Campos financeiros falsos: preço, total, desconto e status de pagamento.
+- JSON malformado e corpo acima do limite.
+- Produto indisponível, preço não definido e gateway não configurado.
+- Sessão, origem, CSRF, entrada multibyte e chave de idempotência.
+- Cliques concorrentes, chaves repetidas, nova chave com mesmo carrinho e
+  tentativa de reutilizar chave com outro carrinho.
+- Falha do gateway e retentativa preservando pedido/payload/preço original.
+- Acesso por outra sessão e acesso direto à página de sucesso.
+- Rate limiting, headers, caminhos privados e HTTPS em produção.
+- Webhook válido repetido três vezes: um único evento order.paid.
+- Timestamp em segundos/milissegundos, assinatura inválida/ausente/expirada,
+  divergência de identificadores e status falso no corpo.
+- Provedor com valor, pagamento integral, moeda, vendedor, aplicação,
+  referência, ID ou ambiente divergentes.
+- Eventos antigos, reembolso e bloqueio do evento de entrega pendente.
+- Persistência do SQLite após fechar/reabrir.
+- Adapter: endpoint, Authorization privado, chave idempotente e payload.
+- Configuração de produção/proxy e conversão monetária exata.
+
+FRONTEND / REGRESSÃO: 20 testes
+- Adicionar produtos diferentes, repetir produto, aumentar/diminuir quantidade,
+  subtotal/total, contador, remover, abrir/fechar, esvaziar e recarregar.
+- Quantidades inválidas e limite atingido por cliques repetidos.
+- localStorage alterado/malformado ou armazenamento indisponível.
+- Alteração de preço no DOM, equivalente à edição via DevTools: o corpo do
+  checkout contém IDs/quantidades, endereço e ID de cotação, sem preço/total.
+- Produto indisponível, preços ausentes, gateway ausente, erro e prévia file://.
+- Carrossel, cinco santos, filtros, detalhes, consulta e menu por teclado mantidos.
+- Endereço obrigatório, seleção do frete, total com entrega, invalidação após
+  alteração de CEP/carrinho e ausência de endereço no localStorage.
+- Página de acompanhamento: status da API prevalece sobre URL/localStorage;
+  entrar sem pedido não confirma pagamento.
+
+FRETE / ENTREGA: 8 testes
+- Cinco produtos com preço 15000 centavos.
+- Frete verdadeiro do servidor, soma no gateway e endereço imutável do pedido.
+- Idempotência e alteração de endereço, CEP, sessão, carrinho e cotação expirada.
+- Frete não configurado; campos falsos; endereço e UF inválidos; rate limiting.
+- Adaptador Correios: token privado, cálculo de peso/medidas, preço e prazo.
+
+LIMITES DA VERIFICAÇÃO
+- Nenhuma chamada real de criação de cobrança foi enviada ao Mercado Pago.
+- Assinaturas foram geradas em fixtures e verificadas pelo SDK oficial.
+- Requer homologação com conta/credenciais de teste, domínio HTTPS e webhook real.
+- Testes de interface rodaram em jsdom, com comportamento de dialog simulado.
+- O executável do navegador não está instalado no ambiente. Não houve
+  inspeção visual final em navegador real nem captura de tela da nova interface.
+- CSS responsivo foi mantido e complementado, mas deve ser conferido em celular
+  e desktop reais antes da publicação.
