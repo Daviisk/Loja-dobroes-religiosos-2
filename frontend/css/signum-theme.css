@@ -1,0 +1,48 @@
+/* Visual reference: supplied Signum Sanctum light/dark artwork.
+   IMPORTANT: this is palette inspiration only. Dobrões de Fé remains the site's brand. */
+:root{color-scheme:light dark;--signum-gold:#b1873f;--signum-gold-bright:#d9b96f;--signum-cream:#f3eee4;--signum-cream-deep:#e8dece;--signum-brown:#3f2c18;--signum-muted:#776650}
+
+/* Existing dark presentation, refined to the supplied black + gold reference. */
+@media(prefers-color-scheme:dark){
+ :root{--bg:#050505;--text:#f0dfb4;--muted:#c1ad7d;--dim:#a18a56;--accent:#dfb958;--rule:rgba(211,170,73,.24);color-scheme:dark}
+ html{background:#050505}body{background:radial-gradient(ellipse at 80% 12%,rgba(183,130,30,.12),transparent 35%),#050505;color:var(--text)}
+}
+
+/* Light presentation: warm cream, antique gold and brown. */
+@media(prefers-color-scheme:light){
+ :root{--bg:#f3eee4;--text:#3f2c18;--muted:#776650;--dim:#8d775d;--accent:#a7792e;--rule:rgba(112,82,39,.24);--gold-gradient:linear-gradient(115deg,#8b6427 0%,#b88a3b 32%,#d8b96f 55%,#9d702a 100%);color-scheme:light}
+ html{background:var(--signum-cream)}
+ body{background:radial-gradient(ellipse at 80% 10%,rgba(174,132,59,.10),transparent 34%),linear-gradient(180deg,#f8f4ec,#eee6da);color:var(--signum-brown)}
+ body::selection{background:#b88b3d;color:#fffaf0}
+ .site-header{background:rgba(248,244,236,.96);border-color:var(--rule)}
+ .top-note,.hero-copy p,.quick-strip span,.category p,.piece p,.cart-clear,.site-footer{color:var(--muted)}
+ .devotional-brand{background:radial-gradient(ellipse at top,rgba(180,137,59,.10),transparent 68%),#f1eadf;color:#795621;border-color:#b7955c;box-shadow:0 12px 40px rgba(77,53,25,.12)}
+ .devotional-brand strong,.hero h1,.script-heading,.footer-brand{color:#4a321b;background:none;-webkit-text-fill-color:currentColor}
+ .devotional-brand span,.devotional-brand small,.text-link,.kicker,.ornament,.services li::before{color:#9a6e27;text-shadow:none}
+ .ribbon{background:linear-gradient(180deg,#eee5d6,#e5d8c5);border-block:1px solid #b99a66;box-shadow:0 7px 22px rgba(67,45,20,.08)}
+ .ribbon a,.footer-links a{color:#5a4127}.ribbon a:hover,.ribbon a.active,.footer-links a:hover{color:#9a6e27;text-shadow:none}
+ .hero{background:radial-gradient(ellipse at 75% 45%,rgba(176,133,57,.10),transparent 65%)}
+ .hero-images::after{background:linear-gradient(0deg,#f3eee4,transparent 24%,transparent 85%,#f3eee4)}.hero-image{mix-blend-mode:multiply}
+ .hero-arrow{color:#9d732e;border-color:var(--rule)}
+ .hero-dots button{color:#80602d;background:#eee5d6;border-color:#b99a66}
+ .hero-dots button[aria-current=true],.button{background:var(--gold-gradient);color:#fffaf0;border-color:#a77b2d;box-shadow:0 5px 18px rgba(91,62,24,.16),inset 0 1px 0 rgba(255,255,255,.3)}
+ .button:hover:not(:disabled){color:#fff;box-shadow:0 8px 24px rgba(91,62,24,.22)}
+ .quick-strip{background:linear-gradient(100deg,#eee5d6,#f8f4ed,#e9dece);border-block:1px solid var(--rule)}
+ .quick-strip strong,.category h2,.piece h3,.section-head h2,.journal summary,.story-grid h2,.cart-heading h2,.cart-line h3,.cart-review h3{color:#4a321b}
+ .round-photo{background:#f7f2e9;border-color:#b99a66;box-shadow:0 14px 30px rgba(69,47,22,.10)}
+ .story-grid,.journal,.contact{border-color:var(--rule);background:radial-gradient(ellipse at 50% 0%,rgba(167,123,45,.06),transparent 68%)}
+ .gallery-filters button{background:#eee5d6;color:#604726;border-color:#b99a66}.gallery-filters button:hover,.gallery-filters button[aria-pressed=true]{background:var(--gold-gradient);color:#fffaf0;border-color:#a77b2d}
+ .piece{background:linear-gradient(145deg,#faf7f1,#f0e7da);border-color:rgba(145,105,45,.28);box-shadow:0 15px 35px rgba(72,48,21,.09)}
+ .piece:hover{border-color:#b18a4b;box-shadow:0 18px 40px rgba(72,48,21,.14)}.piece-image{background:#f5efe5}.piece-image img{-webkit-mask-image:none;mask-image:none}
+ .purchase-price,.cart-totals strong,#grand-total,.cart-review-total{color:#7b5722}
+ .contact-form input,.contact-form textarea,.delivery-grid input,.delivery-grid select,.contact-result textarea{background:#fbf8f2;color:#3f2c18;border-color:#b89a6b}
+ input::placeholder,textarea::placeholder{color:#907d65}.delivery-grid label{color:#5c452d}.delivery-form,.delivery-form fieldset{border-color:var(--rule)}
+ .cep-lookup button,.cart-toggle,.menu-button,.back-top{background:#eee5d6;color:#72511f;border-color:#b7955c}.cart-count{background:var(--gold-gradient);color:#fff}
+ .cart-drawer,.modal,.order-page{background:radial-gradient(ellipse at top right,rgba(172,124,23,.08),transparent 50%),#f5efe6;color:var(--text);border-color:#b7955c}
+ .cart-drawer::backdrop,.modal::backdrop{background:#2b2117aa}.cart-heading{background:#e9dece;border-color:var(--rule)}
+ .cart-quantity button,.cart-quantity input{background:#f7f2e9;color:#4a321b;border-color:#b99a66}
+ .cart-message,.cart-review,.cart-toast{background:#eee3d2;border-color:#b7955c;color:#4a321b}.cart-close,.modal-close,.cart-remove,.order-status{color:#936824}
+ .site-footer{background:linear-gradient(180deg,#e9dece,#dfd2c0);border-top:1px solid var(--rule)}
+ :focus-visible{outline-color:#a7792e}
+ @media(max-width:620px){.ribbon{background:linear-gradient(180deg,#eee5d6,#e5d8c5)}.hero-images::after{background:linear-gradient(0deg,#f3eee4,transparent 25%,transparent 75%,#f3eee4)}}
+}
