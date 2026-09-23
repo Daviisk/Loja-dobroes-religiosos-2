@@ -1,0 +1,108 @@
+RELATÓRIO DE VALIDAÇÃO — 20/09/2026
+
+Comando: npm test
+Ambiente do CI: Node.js 24 + node:test + Supertest + jsdom.
+
+ESCOPO ATUAL
+A suíte foi atualizada para o fluxo CardForm/Checkout Transparente. Os testes
+legados que dependiam de POST /api/checkout e /v1/orders foram removidos ou
+convertidos para /api/card/prepare, /api/card/pay e /v1/payments.
+
+CLIENTES / PAINEL ADMINISTRATIVO
+- Nome, WhatsApp e e-mail são validados antes de criar o pedido.
+- O servidor gera customerId UUID e associa o cliente ao pedido.
+- Cliente persiste no adapter de armazenamento e pode ser listado no painel.
+- APIs /api/admin/* exigem sessão administrativa assinada.
+- Login inválido é rejeitado e a sessão usa cookie HttpOnly/SameSite=Strict.
+- Alterações administrativas rejeitam Origin externa.
+- Pedidos não pagos não podem ser marcados como em preparação, enviados ou
+  entregues.
+- Após pagamento confirmado, status de expedição, rastreio e observações podem
+  ser atualizados sem alterar o estado financeiro.
+
+CARDFORM / PAGAMENTOS
+- Total de produtos e frete calculado exclusivamente pelo servidor.
+- Pedido criado antes da cobrança.
+- X-Idempotency-Key reutilizada na mesma tentativa.
+- Retry após resposta indefinida consulta o Payment existente em vez de criar
+  outra cobrança.
+- Payment ID numérico validado.
+- Referência externa, valor, moeda, vendedor, aplicação e ambiente conferidos.
+- 3D Secure pending_challenge com external_resource_url HTTPS e creq validados.
+- approved/accredited -> paid.
+- approved/partially_refunded -> partially_refunded.
+- refunded, cancelled, in_mediation e charged_back permanecem estados distintos.
+- Reembolso parcial/reembolso/mediação/chargeback bloqueiam expedição pendente.
+
+WEBHOOK
+- Somente tópico payment é aceito.
+- Tópico order legado é rejeitado.
+- x-signature validado pelo WebhookSignatureValidator do SDK oficial.
+- data.id da query precisa corresponder ao body.
+- x-request-id obrigatório.
+- Webhook assinado consulta /v1/payments/{id}; status do body não é autoritativo.
+- Assinatura inválida não consulta o provedor.
+- Reenvio legítimo não é rejeitado por uma janela manual arbitrária de 5 minutos.
+- Eventos financeiros são deduplicados no banco.
+
+SESSÃO / SEGURANÇA
+- Cookie HttpOnly/SameSite=Lax e Secure em produção.
+- Origin exata e CSRF para mutações do checkout.
+- Idempotency-Key UUID obrigatória.
+- Campos extras de preço, total, desconto, frete ou paymentStatus são rejeitados.
+- JSON malformado e corpo acima do limite são rejeitados.
+- Pedido de outra sessão não pode ser consultado.
+- Parâmetros da página /sucesso nunca confirmam pagamento.
+- Headers de segurança e bloqueio de caminhos privados continuam testados.
+
+FRETE
+- Cinco produtos a 15000 centavos cada.
+- SuperFrete e Correios usam token/credenciais somente no servidor.
+- Peso e dimensões vêm do servidor.
+- Cotação vinculada a sessão, carrinho, CEP e quoteId.
+- Cotação expirada ou adulterada é rejeitada.
+- Nova quoteId cria novo contexto CardForm.
+
+PERSISTÊNCIA
+- SQLite continua disponível para desenvolvimento local e testes.
+- O adapter PostgreSQL/Supabase foi implementado para a Vercel e usa DATABASE_URL.
+- Sessões, clientes, pedidos, cotações de frete, chaves de idempotência, eventos e
+  outbox estão modelados em PostgreSQL.
+- O backend usa Supabase Transaction Pooler com prepared statements desativados.
+- As tabelas têm RLS habilitado e nenhuma política pública de leitura/escrita.
+- Sem DATABASE_URL, a Vercel continua marcando o storage como não durável e
+  MERCADO_PAGO_MODE=production permanece bloqueado por persistent_storage_required.
+- O schema do projeto Supabase dobroes-de-fe foi criado e validado; a homologação
+  runtime Vercel -> Supabase deve criar uma sessão/pedido real de teste antes de
+  liberar dinheiro real.
+
+ADAPTER MERCADO PAGO
+- Endpoint testado: POST /v1/payments.
+- Authorization Bearer permanece no backend.
+- X-Idempotency-Key é enviada ao Mercado Pago.
+- transaction_amount vem do total do pedido.
+- external_reference é o orderId interno.
+- three_d_secure_mode=optional.
+- Timeout interno do adapter: 8 segundos.
+
+FRONTEND
+- Carrinho, quantidades, total visual e persistência de IDs/quantidades.
+- Manipulação de preço no DOM não entra na cobrança.
+- CardForm usa o total devolvido por /api/card/prepare.
+- Número/validade/CVV ficam nos campos seguros MercadoPago.js.
+- Polling trata paid, failed, refunded, partially_refunded, charged_back e mediação.
+- Página de acompanhamento exibe Payment Mercado Pago, não Order legado.
+- Painel /admin possui layout responsivo para pedidos e clientes.
+
+CI
+.github/workflows/test.yml executa npm ci e npm test em todo push para main e em
+pull requests. O package-lock inclui o cliente postgres usado pelo Supabase.
+O deploy só deve ser tratado como pronto após GitHub Actions e Vercel ficarem verdes.
+
+LIMITES
+- Testes do gateway usam respostas simuladas; uma cobrança real não é criada pelo CI.
+- Homologação final deve usar credenciais/cartões de teste do Mercado Pago.
+- A conexão de produção com o Supabase deve ser confirmada por operação runtime
+  antes de mudar MERCADO_PAGO_MODE para production.
+- Deve haver teste manual em navegador real para aparência/responsividade e 3DS
+  de um emissor que efetivamente exija Challenge.

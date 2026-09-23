@@ -1,0 +1,62 @@
+ENTREGA E CONFIGURAÇÃO — DOBRÕES RELIGIOSOS
+
+O QUE ESTÁ IMPLEMENTADO
+Cinco produtos a R$150; carrinho; endereço obrigatório; cotação de frete por CEP;
+seleção da entrega; pedido com produtos + frete; CardForm Mercado Pago.
+Sem configuração válida de frete, a compra fica bloqueada. Nunca há frete fictício
+ou cobrança baseada em preço de frete enviado pelo navegador.
+
+PARA ATIVAR O FRETE
+1. Informe SHIPPING_ORIGIN_CEP.
+2. Para Correios direto, configure CORREIOS_USER, CORREIOS_API_PASSWORD,
+   CORREIOS_POSTING_CARD e os códigos de serviço liberados no seu contrato.
+3. Para SuperFrete, configure SHIPPING_PROVIDER=superfrete e SUPERFRETE_TOKEN.
+4. O peso padrão por unidade é SHIPPING_UNIT_WEIGHT_G=60 g. Informe também peso
+   da embalagem e dimensões reais antes de vender.
+5. Valide fisicamente combinações de quantidade/pacote e compare preço/prazo com
+   o provedor durante a homologação.
+
+SEGURANÇA E DADOS
+POST /api/shipping/quote recebe somente items (ID/quantidade) e cep.
+O servidor usa origem, peso e dimensões privados para cotar.
+A cotação é vinculada à sessão, carrinho, CEP e quoteId e expira.
+
+POST /api/card/prepare recebe somente items, address e quoteId. O servidor
+recalcula produtos + frete e devolve o total oficial usado para abrir o CardForm.
+Campos como price, total, discount, shipping ou paymentStatus enviados pelo
+cliente são rejeitados.
+
+Uma cotação diferente gera outro contexto de pedido. Isso evita reutilizar uma
+cotação antiga/expirada em uma nova tentativa de pagamento.
+
+POST /api/card/pay recebe orderId e o token/dados mínimos do CardForm. O preço do
+frete já está congelado no pedido preparado pelo servidor; o navegador não pode
+substituí-lo na cobrança.
+
+Nome/endereço não são gravados no localStorage. O endereço fica no pedido do
+backend para entrega. Número de cartão, validade e CVV não são armazenados pelo
+backend da loja; esses campos são tokenizados pelo MercadoPago.js.
+
+PRAZO E EXPEDIÇÃO
+O prazo retornado pelo provedor é estimativa de transporte após a postagem.
+Separação, compra de etiqueta, postagem, rastreamento e baixa de estoque ainda
+precisam ser tratados pela operação da loja. A tabela outbox do backend bloqueia
+expedição pendente em reembolso, reembolso parcial, mediação, cancelamento ou
+chargeback, mas não existe consumidor automático de expedição neste projeto.
+
+ARMAZENAMENTO
+Em servidor Node tradicional, as cotações e pedidos podem usar SQLite em disco
+persistente. Na Vercel, /tmp é usado somente para homologação em modo test; não é
+um banco compartilhado entre instâncias. Pagamentos reais na implantação Vercel
+atual ficam bloqueados até existir banco compartilhado/persistente.
+
+TESTES
+Execute: npm test
+A suíte cobre cálculo de peso/medidas, Correios, SuperFrete, spoofing de frete,
+CEP/carrinho/sessão, cotação expirada e integração do frete ao CardForm.
+
+DOCUMENTAÇÃO CORREIOS
+https://www.correios.com.br/atendimento/developers/arquivos/manual-para-integracao-correios-api
+Token: POST /token/v1/autentica/cartaopostagem
+Preço: GET /preco/v1/nacional/{codigoServico}
+Prazo: GET /prazo/v1/nacional/{codigoServico}
