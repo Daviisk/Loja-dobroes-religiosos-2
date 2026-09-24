@@ -13,6 +13,9 @@
       button.setAttribute('aria-label',value==='dark'?'Ativar modo claro':'Ativar modo escuro');
       button.textContent=value==='dark'?'☀ Modo claro':'☾ Modo escuro';
     }
+    document.querySelectorAll('[data-logo-light][data-logo-dark]').forEach(logo=>{
+      logo.src=value==='dark'?logo.dataset.logoDark:logo.dataset.logoLight;
+    });
     const meta=document.querySelector('meta[name="theme-color"]');
     if(meta) meta.content=value==='dark'?'#10100e':'#f4efe4';
   }
