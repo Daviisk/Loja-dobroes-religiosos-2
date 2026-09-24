@@ -52,3 +52,8 @@ html[data-theme="dark"] .footer-identity img{
  mix-blend-mode:screen;
  border-radius:0;
 }
+
+/* The brand's z-index creates a stacking context: blend that whole layer. */
+html:not([data-theme="dark"]) .brand.devotional-brand{mix-blend-mode:multiply}
+html[data-theme="dark"] .brand.devotional-brand{mix-blend-mode:screen}
+html .brand.devotional-brand img{mix-blend-mode:normal}
