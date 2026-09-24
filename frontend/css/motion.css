@@ -1,17 +1,10 @@
-/* Motion shared by light and dark themes. Content stays visible without JS. */
+/* Subtle interaction feedback without moving content or overriding component transitions. */
 @media (prefers-reduced-motion:no-preference){
- html{scroll-behavior:smooth}
- body,.site-header,.site-footer,.hero,.piece,.quick-strip,.theme-toggle,.menu-button,.cart-drawer,.modal{transition:background-color .3s ease,color .3s ease,border-color .3s ease,box-shadow .25s ease}
- .button,.gallery-filters button,.theme-toggle,.menu-button,.back-top,#cart-toggle{transition:translate .2s ease,scale .2s ease,background-color .25s ease,color .25s ease,box-shadow .25s ease}
- .button:active:not(:disabled),.gallery-filters button:active,.theme-toggle:active,.menu-button:active,.back-top:active,#cart-toggle:active{scale:.97}
- .piece{transition:translate .25s ease,box-shadow .25s ease,border-color .25s ease,background-color .3s ease}
- .text-link{transition:color .2s ease,border-color .2s ease}
- .text-link::after{display:inline-block;transition:translate .2s ease}
- .contact-form input,.contact-form textarea,.delivery-grid input,.delivery-grid select{transition:border-color .2s ease,box-shadow .2s ease,background-color .3s ease}
- @media (hover:hover) and (pointer:fine){
-  .piece:hover{translate:0 -5px}
-  .button:hover:not(:disabled),.theme-toggle:hover,.back-top:hover{translate:0 -2px}
-  .text-link:hover::after{translate:3px 0}
+ .theme-toggle,.gallery-filters button{
+  transition:background-color .18s ease,color .18s ease,border-color .18s ease;
+ }
+ .contact-form input,.contact-form textarea,.delivery-grid input,.delivery-grid select{
+  transition:border-color .18s ease,box-shadow .18s ease;
  }
 }
 @media (prefers-reduced-motion:reduce){
