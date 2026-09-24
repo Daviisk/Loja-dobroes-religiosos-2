@@ -1,0 +1,40 @@
+/* Theme layer: last stylesheet, preserving product artwork and brand logo. */
+.theme-toggle{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:25;min-height:44px;padding:10px 14px;border:1px solid #b8955d;border-radius:999px;background:#fffaf0;color:#68491f;font:600 13px/1.4 Arial,sans-serif;box-shadow:0 3px 14px #0002;cursor:pointer;touch-action:manipulation}
+.theme-toggle:focus-visible{outline:3px solid #aa7824;outline-offset:4px}
+html[data-theme="dark"]{color-scheme:dark;--bg:#10100e;--text:#f1e5ce;--muted:#c4b8a3;--dim:#a9987c;--accent:#dfba6c;--rule:#b995493d;background:var(--bg)}
+[data-theme="dark"] body{background:radial-gradient(ellipse at top,#292316 0,transparent 50%),#10100e;color:var(--text)}
+[data-theme="dark"] .site-header,[data-theme="dark"] .site-footer{background:#15140f;border-color:var(--rule)}
+[data-theme="dark"] .ribbon,[data-theme="dark"].js .ribbon{background:transparent;border-color:var(--rule)}
+[data-theme="dark"] .devotional-brand img,[data-theme="dark"] .footer-identity img{mix-blend-mode:normal;border-radius:6px}
+[data-theme="dark"] .hero{background:linear-gradient(120deg,#211d15,#14130f);border-color:var(--rule)}
+[data-theme="dark"] .hero h1,[data-theme="dark"] .script-heading,[data-theme="dark"] .footer-brand{color:#ead096;-webkit-text-fill-color:currentColor;text-shadow:none}
+[data-theme="dark"] p,[data-theme="dark"] .hero-copy p,[data-theme="dark"] .story-grid .story-intro,[data-theme="dark"] .gallery-status,[data-theme="dark"] .contact .contact-small,[data-theme="dark"] .modal p,[data-theme="dark"] .modal .detail-note,[data-theme="dark"] .category p,[data-theme="dark"] .piece p,[data-theme="dark"] .quick-strip span{color:var(--muted)}
+[data-theme="dark"] .top-note,[data-theme="dark"] .footer-inner,[data-theme="dark"] .footer-motto,[data-theme="dark"] .cart-clear,[data-theme="dark"] .services li{color:var(--muted);border-color:var(--rule)}
+[data-theme="dark"] h2,[data-theme="dark"] h3,[data-theme="dark"] .quick-strip strong,[data-theme="dark"] .category h2,[data-theme="dark"] .piece h3,[data-theme="dark"] .section-head h2,[data-theme="dark"] .journal summary,[data-theme="dark"] .story-grid h2,[data-theme="dark"] .cart-heading h2,[data-theme="dark"] .cart-line h3{color:#ead096}
+[data-theme="dark"] .ribbon a,[data-theme="dark"] .footer-links a,[data-theme="dark"] .text-link,[data-theme="dark"] .kicker,[data-theme="dark"] .ornament,[data-theme="dark"] .services li::before,[data-theme="dark"] .product-details a,[data-theme="dark"] .product-details summary{color:#dfba6c}
+[data-theme="dark"] .ribbon a:hover,[data-theme="dark"] .ribbon a.active,[data-theme="dark"] .text-link:hover{color:#fff0c9}
+[data-theme="dark"] .quick-strip,[data-theme="dark"] .piece,[data-theme="dark"] .cart-heading{background:#211e17;border-color:var(--rule);box-shadow:none}
+[data-theme="dark"] .piece:hover{border-color:#c69b4f;box-shadow:0 8px 24px #0004}
+[data-theme="dark"] .round-photo{border-color:#ae853e;box-shadow:0 0 0 3px #30291b,0 8px 20px #0004}
+[data-theme="dark"] .purchase-controls .purchase-price,[data-theme="dark"] .cart-totals strong,[data-theme="dark"] #grand-total,[data-theme="dark"] .cart-review-total{color:#edcc87}
+[data-theme="dark"] .button,[data-theme="dark"] .hero-copy .button,[data-theme="dark"] .purchase-controls .button{background:#d0a451;color:#1b150b;border-color:#d0a451;text-shadow:none;box-shadow:0 4px 14px #0003}
+[data-theme="dark"] .button:hover:not(:disabled){background:#e7c478;color:#1b150b}
+[data-theme="dark"] .gallery-filters button,[data-theme="dark"] .hero-dots button{background:#252117;color:#e1c997;border-color:#89703e}
+[data-theme="dark"] .gallery-filters button[aria-pressed=true],[data-theme="dark"] .gallery-filters button:hover,[data-theme="dark"] .hero-dots button[aria-current=true]{background:#d0a451;color:#1b150b;border-color:#d0a451}
+[data-theme="dark"] #cart-toggle.cart-toggle,[data-theme="dark"] body:has(#cart-filled:not([hidden])) #cart-toggle.cart-toggle,[data-theme="dark"] .menu-button,[data-theme="dark"] .back-top,[data-theme="dark"] .theme-toggle{background:#252117;color:#e8c983;border-color:#9c7d44}
+[data-theme="dark"] #cart-toggle .cart-count{background:#d0a451;color:#1b150b;box-shadow:0 0 0 2px #252117}
+[data-theme="dark"] .cart-drawer,[data-theme="dark"] .modal,[data-theme="dark"] .order-page{background:#191711;color:var(--text);border-color:#89703e}
+[data-theme="dark"] .cart-drawer::backdrop,[data-theme="dark"] .modal::backdrop{background:#000b}
+[data-theme="dark"] .contact-form input,[data-theme="dark"] .contact-form textarea,[data-theme="dark"] .delivery-grid input,[data-theme="dark"] .delivery-grid select,[data-theme="dark"] .contact-result textarea,[data-theme="dark"] .cart-quantity input,[data-theme="dark"] .cart-quantity button{background:#100f0c;color:#f1e5ce;border-color:#786642}
+[data-theme="dark"] input::placeholder,[data-theme="dark"] textarea::placeholder{color:#aa9d86}
+[data-theme="dark"] .delivery-grid label{color:#e1d1b1}
+[data-theme="dark"] .cep-lookup button{background:#322917;color:#eed6a2;border-color:#9c7d44}
+[data-theme="dark"] .cart-message,[data-theme="dark"] .cart-review,[data-theme="dark"] .cart-toast,[data-theme="dark"] .contact-result,[data-theme="dark"] .product-details blockquote{background:#2c2518;color:#eed6a2;border-color:#9c7d44}
+[data-theme="dark"] .contact-result p{color:#eed6a2}
+[data-theme="dark"] .cart-close,[data-theme="dark"] .modal-close,[data-theme="dark"] .cart-remove,[data-theme="dark"] .order-status{color:#dfba6c}
+[data-theme="dark"] .card-payment-intro,[data-theme="dark"] .card-payment-security,[data-theme="dark"] .pix-security,[data-theme="dark"] .pix-expiration,[data-theme="dark"] .pix-or{color:var(--muted)}
+[data-theme="dark"] .mp-card-form label,[data-theme="dark"] .pix-document-grid label{color:#ead9b8}
+[data-theme="dark"] .card-payment-method-badges span,[data-theme="dark"] .card-payment-back,[data-theme="dark"] .pix-back{background:#30291c;color:#ead9b8;border-color:#89703e}
+[data-theme="dark"] .pix-document-grid input,[data-theme="dark"] .pix-document-grid select,[data-theme="dark"] .pix-qr-card textarea{background:#100f0c;color:#f1e5ce;border-color:#786642}
+[data-theme="dark"] .card-payment-message,[data-theme="dark"] .pix-message{background:#2c2518;color:#eed6a2}
+[data-theme="dark"] :focus-visible{outline-color:#edcc87}
