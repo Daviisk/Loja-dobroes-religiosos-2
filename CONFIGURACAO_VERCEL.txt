@@ -1,0 +1,59 @@
+CONFIGURAÇÃO DA LOJA DE DOBRÕES 2 NA VERCEL
+
+Use .env.vercel.example como lista de variáveis, sem preencher ou enviar segredos ao GitHub.
+Cadastre os valores em Settings > Environment Variables, no ambiente Production.
+Depois faça um novo deploy.
+
+COMPATIBILIDADE
+Os nomes de variáveis foram comparados com Daviisk/Loja-dobroes-religiosos.
+A Loja 2 usa os mesmos nomes para Mercado Pago, Pix, cartão, Correios,
+SuperFrete, PostgreSQL, administração e prazo de limpeza de pedidos abandonados.
+
+ENDEREÇO DA LOJA
+APP_URL=https://loja-dobroes-religiosos-2.vercel.app
+Use somente a origem HTTPS, sem /frontend, sem caminhos e sem barra final.
+Não copie o APP_URL da loja antiga. Se usar domínio próprio, atualize esse valor.
+Sem APP_URL, a aplicação usa as variáveis oficiais de domínio da Vercel quando disponíveis.
+
+PAGAMENTOS
+MERCADO_PAGO_MODE: test para testes; production para vendas reais.
+Preencha MERCADO_PAGO_ACCESS_TOKEN, MERCADO_PAGO_PUBLIC_KEY,
+MERCADO_PAGO_SELLER_ID e MERCADO_PAGO_APPLICATION_ID com a mesma aplicação e ambiente.
+Configure o webhook de pagamentos da nova loja em:
+https://loja-dobroes-religiosos-2.vercel.app/api/webhooks/mercadopago
+Cadastre em WEBHOOK_SECRET o segredo correspondente à configuração desse webhook.
+Não remova o webhook da loja anterior sem avaliar seu uso.
+
+BANCO E PEDIDOS
+DATABASE_URL recebe a conexão PostgreSQL compatível com o esquema existente.
+Produção exige banco persistente para habilitar pagamentos reais.
+Usar o mesmo banco da outra loja compartilha pedidos, clientes e administração;
+para lojas independentes, prepare um banco separado com o mesmo esquema.
+DATABASE_PATH é apenas para desenvolvimento local; não é uma solução persistente na Vercel.
+
+FRETE
+Escolha um provedor:
+- SuperFrete: SHIPPING_PROVIDER=superfrete, SUPERFRETE_TOKEN e SUPERFRETE_SERVICES.
+- Correios: SHIPPING_PROVIDER=correios, CORREIOS_MODE e credenciais/serviços CORREIOS_*.
+Para ambos, preencha SHIPPING_ORIGIN_CEP e todas as medidas e pesos SHIPPING_*.
+Use medidas e pesos reais das embalagens, não valores inventados.
+
+ADMINISTRAÇÃO
+ADMIN_PASSWORD: no mínimo 12 caracteres.
+ADMIN_SESSION_SECRET: no mínimo 32 caracteres.
+Painel: https://loja-dobroes-religiosos-2.vercel.app/admin
+ABANDONED_ORDER_TIMEOUT_MINUTES mantém a política existente, padrão 30 minutos.
+
+VERIFICAÇÃO APÓS O DEPLOY
+1. /api/products deve retornar HTTP 200 com os cinco produtos.
+2. /api/session deve retornar HTTP 200; não compartilhe seu token CSRF.
+3. Confira adicionar, aumentar, diminuir e remover produtos.
+4. Consulte um CEP e confirme preço/prazo de frete reais.
+5. Valide cartão/Pix com credenciais de teste antes de habilitar vendas reais.
+6. Confira recebimento do webhook, acompanhamento e painel administrativo.
+
+ESTADO ATUAL DA INVESTIGAÇÃO
+A estrutura visual, o carregamento estático do carrinho e a inicialização sem APP_URL
+foram corrigidos. Os testes locais passaram.
+O deploy ainda retorna FUNCTION_INVOCATION_FAILED na API. É necessário consultar
+os logs e as configurações do projeto na Vercel para identificar a causa remanescente.
