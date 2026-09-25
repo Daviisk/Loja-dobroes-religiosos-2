@@ -43,3 +43,9 @@ test('admin lists customers, exposes metrics and cannot fulfill before confirmed
 test('admin mutations reject foreign origins',async t=>{
   const f=fixture(t),agent=request.agent(f.app);await agent.post('/api/admin/login').set('Origin',f.config.baseURL).send({password:f.config.adminPassword}).expect(200);await agent.patch('/api/admin/orders/'+f.order.orderId).set('Origin','https://attacker.example').send({fulfillmentStatus:'shipped',trackingCode:'X',adminNotes:''}).expect(403);
 });
+
+test('admin login rejects missing origin even with correct password',async t=>{
+ const f=fixture(t);
+ await request(f.app).post('/api/admin/login').send({password:f.config.adminPassword}).expect(403);
+ await request(f.app).post('/api/admin/login').set('Origin','https://attacker.example').send({password:f.config.adminPassword}).expect(403);
+});

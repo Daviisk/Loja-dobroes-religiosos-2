@@ -26,7 +26,7 @@ export function mountAdmin(app,{config,store,limit}){
   const adminMutation=(req,res,next)=>{if(req.get('origin')!==config.baseURL)fail(403,'origin_forbidden','Origem não permitida.');next();};
 
   app.get('/api/admin/session',(req,res)=>res.json({configured:config.adminConfigured,authenticated:validSession(req,config)}));
-  app.post('/api/admin/login',loginLimit,(req,res)=>{
+  app.post('/api/admin/login',loginLimit,adminMutation,(req,res)=>{
     if(!config.adminConfigured)fail(503,'admin_not_configured','Configure o acesso administrativo no servidor.');
     if(!req.is('application/json')||!req.body||Object.keys(req.body).join(',')!=='password'||typeof req.body.password!=='string')fail(400,'invalid_login','Login inválido.');
     if(!equal(req.body.password,config.adminPassword))fail(401,'invalid_login','Senha inválida.');

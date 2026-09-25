@@ -1,3 +1,4 @@
+import {trackingRequestError} from '../backend/request-security.js';
 import {createHmac,timingSafeEqual} from 'node:crypto';
 import {readConfig} from '../backend/config.js';
 import {createPostgresStore} from '../backend/postgres-store.js';
@@ -56,7 +57,8 @@ async function refreshPayment(order){
 function json(res,status,body){res.statusCode=status;res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','no-store');res.setHeader('Referrer-Policy','no-referrer');res.end(JSON.stringify(body));}
 
 export default async function handler(req,res){
-  if(!['GET','POST'].includes(req.method))return json(res,405,{error:'method_not_allowed',message:'Método não permitido.'});
+  const rejected=trackingRequestError(req,config.baseURL);
+  if(rejected){if(rejected.allow)res.setHeader('Allow',rejected.allow);return json(res,rejected.status,{error:rejected.error,message:rejected.message});}
   if(!store)return json(res,503,{error:'persistent_storage_required',message:'O acompanhamento está temporariamente indisponível.'});
   if(trackingSecret.length<16)return json(res,503,{error:'tracking_not_configured',message:'O acompanhamento seguro ainda não está configurado.'});
   const url=new URL(req.url,'https://tracking.local');
