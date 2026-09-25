@@ -25,7 +25,8 @@
         "X-DNS-Prefetch-Control": "off",
         "X-Permitted-Cross-Domain-Policies": "none",
         "X-XSS-Protection": "0",
-        "Content-Security-Policy": "default-src 'self'; script-src 'self' https://sdk.mercadopago.com https://*.mlstatic.com 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw=' 'sha256-em/8+qgT9VqvetQVyJ4fz7gi0YWohaf01FbXJa9/QpA=' 'sha256-jqkgTeRF431cvXDmWc7G4NUpi1NrRBbyTzlbZrbYHg0='; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.mercadopago.com https://*.mercadopago.com.br https://*.mlstatic.com; font-src 'self' data:; connect-src 'self' https://viacep.com.br https://api.mercadopago.com https://*.mercadopago.com https://*.mercadopago.com.br https://*.mlstatic.com; frame-src https:; form-action 'self' https:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' https://sdk.mercadopago.com https://*.mlstatic.com 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw=' 'sha256-em/8+qgT9VqvetQVyJ4fz7gi0YWohaf01FbXJa9/QpA=' 'sha256-jqkgTeRF431cvXDmWc7G4NUpi1NrRBbyTzlbZrbYHg0='; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.mercadopago.com https://*.mercadopago.com.br https://*.mlstatic.com; font-src 'self' data:; connect-src 'self' https://viacep.com.br https://api.mercadopago.com https://*.mercadopago.com https://*.mercadopago.com.br https://*.mlstatic.com; frame-src https:; form-action 'self' https:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; upgrade-insecure-requests",
+        "Access-Control-Allow-Origin": "https://dobroes-religiosos.vercel.app"
       },
       "continue": true
     },
