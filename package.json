@@ -8,8 +8,10 @@
   },
   "scripts": {
     "start": "node --env-file-if-exists=.env backend/server.js",
-    "test": "node --test --test-concurrency=1 tests/*.test.js",
-    "preview:build": "node scripts/build-standalone.js"
+    "test": "npm run security:check && node --test --test-concurrency=1 tests/*.test.js",
+    "preview:build": "node scripts/build-standalone.js",
+    "security:headers": "node scripts/security-headers.js",
+    "security:check": "node scripts/security-headers.js --check"
   },
   "dependencies": {
     "express": "5.2.1",

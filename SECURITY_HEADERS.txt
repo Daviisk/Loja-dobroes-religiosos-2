@@ -1,0 +1,11 @@
+# Security header maintenance
+
+Run `npm run security:headers` after changing inline scripts or HTML pages. Commit the resulting vercel.json together with the HTML. `npm test` checks that CSP hashes match the current pages.
+
+Production headers apply at the Vercel edge, including static pages. JavaScript allows only this origin, the Mercado Pago SDK, mlstatic, and hashed existing inline scripts. Inline event handlers and eval are not enabled.
+
+Compatibility exceptions: inline CSS is retained for existing page/provider styling; HTTPS frames and forms are retained for bank-hosted 3DS challenges. Do not add COEP without testing third-party payment frames. These exceptions mean this is not a maximally restrictive policy.
+
+Validation still required with Mercado Pago test credentials in a separate environment: card tokenization, successful and rejected payments, 3DS, Pix generation and provider webhooks. Unit tests use mocks and do not prove real provider integration.
+
+No credentials or production payment settings were changed.

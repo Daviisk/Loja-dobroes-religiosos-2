@@ -25,7 +25,7 @@ test('Vercel mantém acompanhamento dedicado e scripts do carrinho independentes
   assert.ok(trackingLink>=0&&tracking>=0&&generic>=0);
   assert.ok(trackingLink<generic&&tracking<generic);
   for(const path of ['/js/cart.js','/frontend/js/cart.js']){
-    const destination=config.routes.find(route=>route.src&&new RegExp('^'+route.src+'$').test(path));
+    const destination=config.routes.find(route=>!route.continue&&route.src&&new RegExp('^'+route.src+'$').test(path));
     assert.ok(destination);
     assert.ok(!destination.dest.startsWith('/api'),'Cart scripts must not depend on a running API');
   }
